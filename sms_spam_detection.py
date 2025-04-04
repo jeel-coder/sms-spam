@@ -1,4 +1,4 @@
-=
+
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import matplotlib.pyplot as plt # data visualization
@@ -9,8 +9,8 @@ import warnings
 warnings.filterwarnings('ignore')
 import os
 print(os.listdir('/kaggle/input/sms-spam-collection-dataset'))
-=
-import pandas as pd
+
+
 df = pd.read_csv('/kaggle/input/sms-spam-collection-dataset/spam.csv', encoding='ISO-8859-1')
 df.head()
 
@@ -22,14 +22,12 @@ df.info
 #drop last 3 columns
 df=df.drop(columns=['Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4'])
 
-df
-
-df.sample(5)
+#df.sample(5)
 
 #rename columns
 df.rename(columns={'v1':'target','v2':'text'},inplace=True)
 
-df.head(5)
+#df.head(5)
 
 from sklearn.preprocessing import LabelEncoder
 encoder=LabelEncoder()
@@ -40,7 +38,6 @@ encoder.fit_transform(df['target'])
 
 df['target']=encoder.fit_transform(df['target'])
 
-df.head()
 
 #missing values
 df.isna().sum()
@@ -56,19 +53,8 @@ df=df.drop_duplicates(keep='first')
 df.duplicated().sum()
 
 df.shape
-
-df.head()
-
 df['target'].value_counts()
-
-import matplotlib.pyplot as plt
-
 plt.pie(df['target'].value_counts(),labels=['ham','spam'],autopct="%0.2f")
-
-#data is imbalanced
-#3 now we will find in our dataset there are how many alphabets,words,sentences
-
-import nltk
 
 nltk.download('punkt')
 
@@ -84,13 +70,12 @@ df['text'].apply(lambda x:nltk.word_tokenize(x))
 # i want its length
 df['num_words']=df['text'].apply(lambda x:len(nltk.word_tokenize(x)))
 
-df.head()
 
 df['text'].apply(lambda x:nltk.sent_tokenize(x))
 
 df['num_sentences']=df['text'].apply(lambda x:len(nltk.sent_tokenize(x)))
 
-df.head()
+
 
 df[['num_characters', 'num_words', 'num_sentences']].describe()
 
@@ -125,17 +110,7 @@ df_new.corr()
 
 sns.heatmap(df_new.corr(),annot=True)
 
-#num_characters	num_word num_sentences inka apas mai bohot acha correlation hai
-#isliye sabko nahi rakh sakte
-#isilye num_characters ko lenge kyuki uska corr sabse jyada hai target ke sath
 
-"""Data preprocess
-* lower case
-* tokenization
-* remove special characters
-* remove stop words and punctuation
-* stemming
-"""
 
 def transform_text(text):
     text = text.lower()  # Convert to lowercase
@@ -397,14 +372,3 @@ new_df_scaled = new_df.merge(temp_df,on='Algorithm')
 temp_df = pd.DataFrame({'Algorithm':clfs.keys(),'Accuracy_num_chars':accuracy_scores,'Precision_num_chars':precision_scores}).sort_values('Precision_num_chars',ascending=False)
 
 new_df_scaled.merge(temp_df,on='Algorithm')
-
-# Voting Classifier
-svc = SVC(kernel='sigmoid', gamma=1.0,probability=True)
-mnb = MultinomialNB()
-etc = ExtraTreesClassifier(n_estimators=50, random_state=2)
-
-from sklearn.ensemble import VotingClassifier
-
-voting = VotingClassifier(estimators=[('svm', svc), ('nb', mnb), ('et', etc)],voting='soft')
-
-voting.fit(x_train,y_train)
